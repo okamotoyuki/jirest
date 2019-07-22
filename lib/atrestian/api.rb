@@ -31,9 +31,9 @@ module Atrestian
 
   class ApiInfoTable
 
-    def initialize(config=nil)
+    def initialize(json=nil)
       @hash = {}
-      load_config(config) unless config.nil?
+      deserialize(json) unless json.nil?
     end
 
     def set(name, api_info)
@@ -56,21 +56,21 @@ module Atrestian
       end
     end
 
-    def dump_config
-      config = {}
+    def serialize
+      obj = {}
       @hash.each do |key, value|
         api = {}
         api['name'] = value.name
         api['params'] = value.params
         api['command'] = value.command
         api['digest'] = value.digest
-        config[key] = api
+        obj[key] = api
       end
-      return config
+      return JSON.generate(obj)
     end
 
-    private def load_config(config)
-      config.each do |key, value|
+    private def deserialize(json)
+      JSON.parse(json).each do |key, value|
         @hash[key] = ApiInfo.new(value['name'], value['params'], value['command'], value['digest'])
       end
     end
@@ -141,18 +141,20 @@ module Atrestian
 
     # check if any API is changed on the API reference
     private def is_api_changed
-      return false if @current_apis.size != @latest_apis.size
+      return true if @current_apis.size != @latest_apis.size
       @current_apis.each do |key, value|
         latest_api = @latest_apis.get(key)
-        return false unless latest_api.nil? || (latest_api.digest != value.digest)
+        return true if latest_api.nil? || (latest_api.digest != value.digest)
       end
-      return true
+      return false
     end
 
     # update API config
     def update
       if is_api_changed
-        Util::write_api_config(@latest_apis.dump_config)
+        Util::dump_api_config(@latest_apis.serialize)
+      else
+        Util::msg 'API Info is up to date.'
       end
     end
 

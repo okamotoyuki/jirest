@@ -4,22 +4,32 @@ module Atrestian
 
   class Util
 
+    def self.error(msg)
+      print "\e[31m"
+      puts "error: #{msg}"
+      print "\e[0m"
+    end
+
+    def self.msg(str)
+      puts str
+    end
+
     def self.load_api_config
       json = nil
       begin
-        File.open('./conf/api.json', 'r') do |f|
-          json = JSON.load(f)
-        end
+        json = File.read('./conf/api.json')
       rescue => e
-        p 'error: failed to load config'
-        p 'config updating...'
+        error 'failed to load config!'
+        msg 'config updating...'
       end
       return json
     end
 
-    def self.write_api_config(config)
-      File.open('./conf/api.json', 'w') do |f|
-        f.puts(JSON.generate(config))
+    def self.dump_api_config(json)
+      begin
+        File.write('./conf/api.json', json)
+      rescue => e
+        error 'failed to store config!'
       end
     end
 
