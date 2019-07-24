@@ -9,10 +9,12 @@ module Atrestian
   # A class which stands REST API information
   class ApiInfo
 
-    attr_reader :name, :params, :command, :digest
+    attr_reader :name, :path, :description, :params, :command, :digest
 
-    def initialize(name, params, command, digest=nil)
+    def initialize(name, path, description, params, command, digest=nil)
       @name = name
+      @path = path
+      @description = description
       @params = params
       @command = command
       @digest = digest || calc_digest
@@ -20,8 +22,9 @@ module Atrestian
 
     private def calc_digest
       str = @name
+      str += @description
       @params.each do |param|
-        str += param[0] # param name
+        str += param['name'] # param name
       end
       str += @command
       return Digest::SHA256.hexdigest(str)
@@ -29,6 +32,7 @@ module Atrestian
 
   end
 
+  # A class which store all the REST API information
   class ApiInfoTable
 
     def initialize(json=nil)
@@ -48,6 +52,10 @@ module Atrestian
       return @hash.size
     end
 
+    def keys
+      return @hash.keys
+    end
+
     def each
       if block_given?
         @hash.each do |key, value|
@@ -56,11 +64,14 @@ module Atrestian
       end
     end
 
+    # convert Ruby object information to json
     def serialize
       obj = {}
       @hash.each do |key, value|
         api = {}
         api['name'] = value.name
+        api['path'] = value.path
+        api['description'] = value.description
         api['params'] = value.params
         api['command'] = value.command
         api['digest'] = value.digest
@@ -69,9 +80,12 @@ module Atrestian
       return JSON.generate(obj)
     end
 
+    # convert json to Ruby object
     private def deserialize(json)
       JSON.parse(json).each do |key, value|
-        @hash[key] = ApiInfo.new(value['name'], value['params'], value['command'], value['digest'])
+        @hash[key] =
+            ApiInfo.new(value['name'], value['path'], value['description'],
+                        value['params'], value['command'], value['digest'])
       end
     end
 
@@ -80,8 +94,9 @@ module Atrestian
   # A class which is for updating REST API information
   class ApiInfoUpdater
 
-    def initialize()
-      @current_apis = ApiInfoTable.new(Util::load_api_config)
+    def initialize(api_config=nil)
+      Util::msg 'config updating...' if api_config.nil?
+      @current_apis = ApiInfoTable.new(api_config)
       @latest_apis = get_latest_apis
     end
 
@@ -104,6 +119,12 @@ module Atrestian
         name = h3.content
         root_api_elem = h3.parent
 
+        # extract API path
+        path = h3.next.content
+
+        # extract API description
+        description = h3.next.next.content
+
         # extract parameters
         params = []
         h5_arr = root_api_elem.css('div > h5')
@@ -111,10 +132,15 @@ module Atrestian
           section_arr = h5_arr.first.parent.css('section')
           unless section_arr.empty?
             section_arr.each do |section|
-              param_info = Array.new(4)
-              section.children.each_with_index do |child, i|
-                param_info[i] = child.content
-              end
+              param_info = {}
+              strong_arr = section.css('strong')
+              param_info['name'] = strong_arr[0].content unless strong_arr.empty?
+              span_arr = section.css('p > span')
+              param_info['type'] = span_arr[0].content unless span_arr.empty?
+              p_arr = section.css('div > p')
+              param_info['description'] = p_arr[0].content unless p_arr.empty?
+              code_arr = section.css('div > span > span > span > code')
+              param_info['default'] = code_arr[0].content unless code_arr.empty?
               params.push(param_info)
             end
           end
@@ -133,7 +159,7 @@ module Atrestian
         end
         next if command.nil?
 
-        latest_apis.set(name, ApiInfo.new(name, params, command))
+        latest_apis.set(name, ApiInfo.new(name, path, description, params, command))
       end
 
       return latest_apis

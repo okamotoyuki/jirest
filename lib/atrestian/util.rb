@@ -5,8 +5,18 @@ module Atrestian
   class Util
 
     def self.error(msg)
+      print_red_line "error: #{msg}"
+    end
+
+    def self.print_red_line(str)
       print "\e[31m"
-      puts "error: #{msg}"
+      puts str
+      print "\e[0m"
+    end
+
+    def self.print_bold_line(str)
+      print "\e[1m"
+      puts str
       print "\e[0m"
     end
 
@@ -20,7 +30,6 @@ module Atrestian
         json = File.read('./conf/api.json')
       rescue => e
         error 'failed to load config!'
-        msg 'config updating...'
       end
       return json
     end
