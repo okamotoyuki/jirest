@@ -20,6 +20,12 @@ module Atrestian
       print "\e[0m"
     end
 
+    def self.print_gray_line(str)
+      print "\e[37m"
+      puts str
+      print "\e[0m"
+    end
+
     def self.msg(str)
       puts str
     end

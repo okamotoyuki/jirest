@@ -39,13 +39,17 @@ module Atrestian
       puts "\t#{@target_api_info.description}"
       puts
       puts "\tParameters:"
-      @target_api_info.params.each do |param|
-        puts "\t\t#{param}"
+      if @target_api_info.params.empty?
+        puts "\t\tNo parameters."
+      else
+        @target_api_info.params.each do |param|
+          puts "\t\t#{param}"
+        end
       end
       puts
       puts "\tSample:"
       @target_api_info.command.lines.each do |line|
-        puts "\t\t#{line}"
+        Util::print_gray_line("\t\t#{line}")
       end
     end
 
