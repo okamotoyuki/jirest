@@ -127,20 +127,20 @@ module Atrestian
 
         # extract parameters
         params = []
-        h5_arr = root_api_elem.css('div > h5')
-        if not h5_arr.empty? and h5_arr.first.content == 'Query parameters'
+        h5_arr = root_api_elem.css('h5')
+        if not h5_arr.empty? and h5_arr.first.content.end_with?('parameters')
           section_arr = h5_arr.first.parent.css('section')
           unless section_arr.empty?
             section_arr.each do |section|
               param_info = {}
               strong_arr = section.css('strong')
-              param_info['name'] = strong_arr[0].content unless strong_arr.empty?
+              param_info['name'] = strong_arr[0].content.chomp unless strong_arr.empty?
               span_arr = section.css('p > span')
-              param_info['type'] = span_arr[0].content unless span_arr.empty?
+              param_info['type'] = span_arr[0].content.chomp unless span_arr.empty?
               p_arr = section.css('div > p')
-              param_info['description'] = p_arr[0].content unless p_arr.empty?
+              param_info['description'] = p_arr[0].content.chomp unless p_arr.empty?
               code_arr = section.css('div > span > span > span > code')
-              param_info['default'] = code_arr[0].content unless code_arr.empty?
+              param_info['default'] = code_arr[0].content.chomp unless code_arr.empty?
               params.push(param_info)
             end
           end
