@@ -32,24 +32,24 @@ module Atrestian
     end
 
     private def print_api_description
-      Util::print_bold_line(@target_api_info.name)  # API name
-      puts
-      puts "\t#{@target_api_info.path}"
+      Util::print_red_bold_line(@target_api_info.name) # API name
       puts
       puts "\t#{@target_api_info.description}"
       puts
-      puts "\tParameters:"
+      Util::print_bold_line "Parameters:"
+      puts
       if @target_api_info.params.empty?
-        puts "\t\tNo parameters."
+        puts "\tNo parameters."
       else
         @target_api_info.params.each do |param|
-          puts "\t\t#{param}"
+          puts "\t#{param}"
         end
       end
       puts
-      puts "\tSample:"
+      Util::print_bold_line "Sample:"
+      puts
       @target_api_info.command.lines.each do |line|
-        Util::print_gray_line("\t\t#{line}")
+        Util::print_gray_line("#{line}")
       end
     end
 
