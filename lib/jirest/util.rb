@@ -1,6 +1,6 @@
 require 'json'
 
-module Atrestian
+module Jirest
 
   class Util
 

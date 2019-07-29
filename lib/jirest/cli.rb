@@ -1,7 +1,7 @@
-require "atrestian"
+require "jirest"
 require "thor"
 
-module Atrestian
+module Jirest
   class Cli < Thor
 
     desc "describe", "describe"

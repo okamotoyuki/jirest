@@ -1,8 +1,8 @@
 require "test_helper"
 
-class AtrestianTest < Minitest::Test
+class JirestTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::Atrestian::VERSION
+    refute_nil ::Jirest::VERSION
   end
 
   def test_it_does_something_useful

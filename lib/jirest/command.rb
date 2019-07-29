@@ -1,4 +1,4 @@
-module Atrestian
+module Jirest
 
   class CommandExecutor
 

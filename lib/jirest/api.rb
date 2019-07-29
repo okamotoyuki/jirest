@@ -2,7 +2,7 @@ require 'open-uri'
 require 'nokogiri'
 require 'digest/sha2'
 
-module Atrestian
+module Jirest
 
   API_DOC_URI = 'https://developer.atlassian.com/cloud/jira/platform/rest/v3'
 

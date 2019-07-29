@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-require "atrestian"
-
-Atrestian::Cli.start

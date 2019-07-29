@@ -1,11 +1,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "atrestian/version"
+require "jirest/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "atrestian"
-  spec.version       = Atrestian::VERSION
+  spec.name          = "jirest"
+  spec.version       = Jirest::VERSION
   spec.authors       = ["OkamotoYuki"]
   spec.email         = ["okamoto.yuki.0130@gmail.com"]
 
