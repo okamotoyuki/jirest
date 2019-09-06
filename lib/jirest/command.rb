@@ -12,6 +12,7 @@ module Jirest
       puts
     end
 
+    # print API names
     def print_api_names
       str = ''
       @apis.keys.sort.each do |key|
@@ -20,6 +21,7 @@ module Jirest
       return str.chomp
     end
 
+    # execute peco command
     def peco(input)
       unless input.nil?
         IO.popen('peco --select-1', 'r+') do |io|
@@ -31,6 +33,7 @@ module Jirest
       return nil
     end
 
+    # print API description
     private def print_api_description
       Util::print_red_bold_line(@target_api_info.name) # API name
       puts
@@ -38,6 +41,7 @@ module Jirest
       puts
     end
 
+    # print API parameters
     private def print_api_parameters
       Util::print_bold_line "Parameters:"
       puts
@@ -51,11 +55,13 @@ module Jirest
       puts
     end
 
+    # print each API parameter
     private def print_api_parameter(param)
       puts "\t#{param['name']} (#{param['type']}):"
       print_as_multiple_lines(param['description'],"\t\t")
     end
 
+    # print string as multiple lines
     private def print_as_multiple_lines(str, prefix='')
       default_max_columns = 90
       terminal_margin = 30
@@ -69,6 +75,7 @@ module Jirest
       end
     end
 
+    # print API sample
     private def print_api_sample
       Util::print_bold_line "Sample:"
       puts
@@ -77,6 +84,7 @@ module Jirest
       end
     end
 
+    # describe API information
     def describe
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)

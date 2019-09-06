@@ -20,6 +20,7 @@ module Jirest
       @digest = digest || calc_digest
     end
 
+    # calculate digest of each API information
     private def calc_digest
       str = @name
       str += @description
@@ -100,6 +101,7 @@ module Jirest
       @latest_apis = get_latest_apis
     end
 
+    # retrieve the latest API information
     private def get_latest_apis
       latest_apis = ApiInfoTable.new
 
