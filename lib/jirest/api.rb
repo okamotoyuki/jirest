@@ -134,13 +134,13 @@ module Jirest
             section_arr.each do |section|
               param_info = {}
               strong_arr = section.css('strong')
-              param_info['name'] = strong_arr[0].content.chomp unless strong_arr.empty?
+              param_info['name'] = strong_arr[0].content.chomp(' ') unless strong_arr.empty?
               span_arr = section.css('p > span')
-              param_info['type'] = span_arr[0].content.chomp unless span_arr.empty?
+              param_info['type'] = span_arr[0].content.chomp(' ') unless span_arr.empty?
               p_arr = section.css('div > p')
-              param_info['description'] = p_arr[0].content.chomp unless p_arr.empty?
+              param_info['description'] = p_arr[0].content.chomp(' ') unless p_arr.empty?
               code_arr = section.css('div > span > span > span > code')
-              param_info['default'] = code_arr[0].content.chomp unless code_arr.empty?
+              param_info['default'] = code_arr[0].content.chomp(' ') unless code_arr.empty?
               params.push(param_info)
             end
           end

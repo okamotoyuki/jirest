@@ -36,16 +36,40 @@ module Jirest
       puts
       puts "\t#{@target_api_info.description}"
       puts
+    end
+
+    private def print_api_parameters
       Util::print_bold_line "Parameters:"
       puts
       if @target_api_info.params.empty?
         puts "\tNo parameters."
       else
         @target_api_info.params.each do |param|
-          puts "\t#{param}"
+          print_api_parameter(param)
         end
       end
       puts
+    end
+
+    private def print_api_parameter(param)
+      puts "\t#{param['name']} (#{param['type']}):"
+      print_as_multiple_lines(param['description'],"\t\t")
+    end
+
+    private def print_as_multiple_lines(str, prefix='')
+      default_max_columns = 90
+      terminal_margin = 30
+      columns = `stty size`.split[1].to_i
+      max = columns > default_max_columns ? columns - terminal_margin : default_max_columns - terminal_margin
+
+      # TODO : prevent the word in the end of line from being splitting into multiple part
+      # e.g. 'Pseudoantidisestablishmentarianism' -> 'Pseudoantidisest' + 'ablishmentarianism'
+      str.scan(/.{1,#{max}}/).each do |line|
+        puts "#{prefix}#{line}"
+      end
+    end
+
+    private def print_api_sample
       Util::print_bold_line "Sample:"
       puts
       @target_api_info.command.lines.each do |line|
@@ -57,6 +81,8 @@ module Jirest
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
       print_api_description
+      print_api_parameters
+      print_api_sample
     end
 
   end
