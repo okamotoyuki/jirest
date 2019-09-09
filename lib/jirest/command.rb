@@ -3,13 +3,13 @@ module Jirest
   class CommandExecutor
 
     def initialize
-      api_config = Util::load_api_config
-      if api_config.nil?
+      api_def = Util::load_api_definition
+      if api_def.nil?
         ApiInfoUpdater.new.update
-        api_config = Util::load_api_config
+        api_def = Util::load_api_definition
       end
-      @apis = ApiInfoTable.new(api_config)
-      puts
+      @apis = ApiInfoTable.new(api_def)
+      @params = {}
     end
 
     # print API names
@@ -84,13 +84,60 @@ module Jirest
       end
     end
 
+    # ask user to input parameters
+    private def ask_params
+      if @target_api_info.params.empty?
+        return
+      end
+
+      STDERR.puts "please input parameters."
+      STDERR.puts
+      @target_api_info.params.each do |param|
+        STDERR.puts "#{param['name']} (#{param['type']}):"
+        STDERR.print '> '
+        value = STDIN.gets.chomp
+        @params[param['name']] = value
+        STDERR.puts
+      end
+    end
+
+    private def generate_curl_command
+      command = @target_api_info.command
+
+      # embed parameters
+      @params.each do |key, value|
+        command.gsub!("{#{key}}", value)
+      end
+
+      # load config
+      conf = Util::load_config
+
+      # embed credentials
+      command.gsub!('curl', "curl -u:#{conf['user']}:#{conf['key']}")
+
+      # embed Jira Base URL
+      command.gsub!('--url \'', "--url '#{conf['base-url']}")
+
+      return command
+    end
+
     # describe API information
     def describe
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
+      puts
       print_api_description
       print_api_parameters
       print_api_sample
+    end
+
+    # print curl command for API
+    def dryrun
+      target_api_name = peco(print_api_names)
+      @target_api_info = @apis.get(target_api_name)
+      ask_params
+      command = generate_curl_command
+      puts command
     end
 
   end

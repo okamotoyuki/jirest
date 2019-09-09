@@ -12,8 +12,14 @@ module Jirest
 
     desc "update", "update"
     def update
-      api_config = Util::load_api_config
-      ApiInfoUpdater.new(api_config).update
+      api_def = Util::load_api_definition
+      ApiInfoUpdater.new(api_def).update
+    end
+
+    desc "dryrun", "dryrun"
+    def dryrun
+      command_generator = CommandExecutor.new
+      command_generator.dryrun
     end
 
   end

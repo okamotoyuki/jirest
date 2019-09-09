@@ -1,4 +1,5 @@
 require 'json'
+require 'yaml'
 
 module Jirest
 
@@ -36,22 +37,26 @@ module Jirest
       puts str
     end
 
-    def self.load_api_config
+    def self.load_api_definition
       json = nil
       begin
-        json = File.read('./conf/api.json')
+        json = File.read('./data/api.json')
       rescue => e
-        error 'failed to load config!'
+        error 'failed to load API definition!'
       end
       return json
     end
 
-    def self.dump_api_config(json)
+    def self.dump_api_definition(json)
       begin
-        File.write('./conf/api.json', json)
+        File.write('./data/api.json', json)
       rescue => e
-        error 'failed to store config!'
+        error 'failed to store API definition!'
       end
+    end
+
+    def self.load_config
+      return YAML.load_file(ENV['HOME'] + '/.jirest.yml')
     end
 
   end

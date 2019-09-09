@@ -95,9 +95,9 @@ module Jirest
   # A class which is for updating REST API information
   class ApiInfoUpdater
 
-    def initialize(api_config=nil)
-      Util::msg 'config updating...' if api_config.nil?
-      @current_apis = ApiInfoTable.new(api_config)
+    def initialize(api_def=nil)
+      Util::msg 'API information updating...' if api_def.nil?
+      @current_apis = ApiInfoTable.new(api_def)
       @latest_apis = get_latest_apis
     end
 
@@ -177,10 +177,10 @@ module Jirest
       return false
     end
 
-    # update API config
+    # update API information
     def update
       if is_api_changed
-        Util::dump_api_config(@latest_apis.serialize)
+        Util::dump_api_definition(@latest_apis.serialize)
       else
         Util::msg 'API Info is up to date.'
       end
