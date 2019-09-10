@@ -22,5 +22,11 @@ module Jirest
       command_generator.dryrun
     end
 
+    desc "exec", "exec"
+    def exec
+      command_generator = CommandExecutor.new
+      command_generator.exec
+    end
+
   end
 end

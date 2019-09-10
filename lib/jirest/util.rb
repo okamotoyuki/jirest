@@ -59,6 +59,9 @@ module Jirest
       return YAML.load_file(ENV['HOME'] + '/.jirest.yml')
     end
 
+    # def self.create_temporary_file()
+    # end
+
   end
 
 end

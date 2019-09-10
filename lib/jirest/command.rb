@@ -101,6 +101,24 @@ module Jirest
       end
     end
 
+    # ask if user wants to proceed
+    private def ask_if_proceed
+      regex = /^[ny]$/
+      value = ''
+
+      while not regex.match(value) do
+        STDERR.puts "do you want to proceed? (y/n)"
+        STDERR.print '> '
+        value = STDIN.gets.chomp
+      end
+
+      if value == 'n'
+        STDERR.puts 'exit process.'
+        exit
+      end
+    end
+
+    # generate executable curl command
     private def generate_curl_command
       command = @target_api_info.command
 
@@ -113,7 +131,7 @@ module Jirest
       conf = Util::load_config
 
       # embed credentials
-      command.gsub!('curl', "curl -u:#{conf['user']}:#{conf['key']}")
+      command.gsub!('curl', "curl -s -u:#{conf['user']}:#{conf['key']}")
 
       # embed Jira Base URL
       command.gsub!('--url \'', "--url '#{conf['base-url']}")
@@ -138,6 +156,23 @@ module Jirest
       ask_params
       command = generate_curl_command
       puts command
+    end
+
+    # edit curl command sample
+    def exec
+      target_api_name = peco(print_api_names)
+      @target_api_info = @apis.get(target_api_name)
+      ask_params
+      command = generate_curl_command
+      STDERR.puts "the following command is going to be executed."
+      STDERR.puts
+      STDERR.puts "`#{command}`"
+      STDERR.puts
+      ask_if_proceed
+      STDERR.puts
+      IO.popen(command, :err => [:child, :out]) do |io|
+        puts io.gets.chomp
+      end
     end
 
   end
