@@ -28,5 +28,11 @@ module Jirest
       command_generator.exec
     end
 
+    desc "edit", "edit"
+    def edit
+      command_generator = CommandExecutor.new
+      command_generator.edit
+    end
+
   end
 end

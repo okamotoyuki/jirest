@@ -55,12 +55,27 @@ module Jirest
       end
     end
 
+    def self.load_user_definition
+      json = nil
+      begin
+        json = File.read('./data/user.json')
+      rescue => e
+        # do nothing
+      end
+      return json
+    end
+
+    def self.dump_user_definition(json)
+      begin
+        File.write('./data/user.json', json)
+      rescue => e
+        error 'failed to store user definition!'
+      end
+    end
+
     def self.load_config
       return YAML.load_file(ENV['HOME'] + '/.jirest.yml')
     end
-
-    # def self.create_temporary_file()
-    # end
 
   end
 

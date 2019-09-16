@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module Jirest
 
   class CommandExecutor
@@ -8,12 +10,16 @@ module Jirest
         ApiInfoUpdater.new.update
         api_def = Util::load_api_definition
       end
-      @apis = ApiInfoTable.new(api_def)
-      @params = {}
+      @apis = ApiInfoTable.new(api_def)   # API table
+      @params = {}                        # parameters
+
+      @templates = {}                     # curl command templates
+      user_def = Util::load_user_definition
+      @templates = JSON.parse(user_def) unless user_def.nil?
     end
 
     # print API names
-    def print_api_names
+    private def print_api_names
       str = ''
       @apis.keys.sort.each do |key|
         str += "#{key}\n"
@@ -22,7 +28,7 @@ module Jirest
     end
 
     # execute peco command
-    def peco(input)
+    private def peco(input)
       unless input.nil?
         IO.popen('peco --select-1', 'r+') do |io|
           io.puts(input)
@@ -31,6 +37,14 @@ module Jirest
         end
       end
       return nil
+    end
+
+    # execute vim command
+    private def vim(path)
+      unless path.nil?
+        IO.popen("</dev/tty vim #{path} 1>&2", 'r+') do |io|
+        end
+      end
     end
 
     # print API description
@@ -75,9 +89,9 @@ module Jirest
       end
     end
 
-    # print API sample
-    private def print_api_sample
-      Util::print_bold_line "Sample:"
+    # print API template
+    private def print_api_template
+      Util::print_bold_line "Template:"
       puts
       @target_api_info.command.lines.each do |line|
         Util::print_gray_line("#{line}")
@@ -146,10 +160,10 @@ module Jirest
       puts
       print_api_description
       print_api_parameters
-      print_api_sample
+      print_api_template
     end
 
-    # print curl command for API
+    # print curl command for API request
     def dryrun
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
@@ -158,7 +172,7 @@ module Jirest
       puts command
     end
 
-    # edit curl command sample
+    # execute curl command for API request
     def exec
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
@@ -175,6 +189,40 @@ module Jirest
       end
     end
 
+    # edit curl command template
+    def edit
+      target_api_name = peco(print_api_names)
+      @target_api_info = @apis.get(target_api_name)
+      template = @templates[target_api_name]
+      template = @target_api_info.command if template.nil?
+
+      Tempfile.open do |tmp|
+        # print parameter information as a comments
+        @target_api_info.params.each do |param|
+          tmp.puts "#\t#{param['name']} (#{param['type']}):"
+          tmp.puts "#\t\t#{param['description']}"
+        end
+        tmp.puts
+        tmp.puts template
+        tmp.flush
+        vim(tmp.path)
+
+        new_template = ''
+        File.open(tmp.path, 'r') do |file|
+          file.each_line do |line|
+            next if line.start_with?('#') or line.match(/^\s*$/)  # ignore comments and empty lines
+            new_template += line
+          end
+          new_template.chomp!
+        end
+
+        if template != new_template
+          @templates[target_api_name] = new_template
+          Util::dump_user_definition(JSON.generate(@templates))
+          STDERR.puts 'template is successfully stored.'
+        end
+      end
+    end
   end
 
 end
