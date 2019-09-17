@@ -169,12 +169,18 @@ module Jirest
 
     # check if any API is changed on the API reference
     private def is_api_changed
-      return true if @current_apis.size != @latest_apis.size
+      # true if number of APIs is changed
+      ret = @current_apis.size != @latest_apis.size
+
+      # true if digest of each API is changed
       @current_apis.each do |key, value|
         latest_api = @latest_apis.get(key)
-        return true if latest_api.nil? || (latest_api.digest != value.digest)
+        if latest_api.nil? || (latest_api.digest != value.digest)
+          ret = true
+          Util::msg "'#{key}' API was updated."
+        end
       end
-      return false
+      return ret
     end
 
     # update API information
