@@ -10,31 +10,31 @@ module Jirest
     end
 
     def self.print_red_line(str)
-      print "\e[31m"
-      puts str
-      print "\e[0m"
+      STDERR.print "\e[31m"
+      STDERR.puts str
+      STDERR.print "\e[0m"
     end
 
     def self.print_bold_line(str)
-      print "\e[1m"
-      puts str
-      print "\e[0m"
+      STDERR.print "\e[1m"
+      STDERR.puts str
+      STDERR.print "\e[0m"
     end
 
     def self.print_red_bold_line(str)
-      print "\e[31;1m"
-      puts str
-      print "\e[0m"
+      STDERR.print "\e[31;1m"
+      STDERR.puts str
+      STDERR.print "\e[0m"
     end
 
     def self.print_gray_line(str)
-      print "\e[37m"
-      puts str
-      print "\e[0m"
+      STDERR.print "\e[37m"
+      STDERR.puts str
+      STDERR.print "\e[0m"
     end
 
     def self.msg(str)
-      puts str
+      STDERR.puts str
     end
 
     def self.load_api_definition(data_dir)

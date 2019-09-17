@@ -50,17 +50,17 @@ module Jirest
     # print API description
     private def print_api_description
       Util::print_red_bold_line(@target_api_info.name) # API name
-      puts
-      puts "\t#{@target_api_info.description}"
-      puts
+      Util::msg ''
+      Util::msg "\t#{@target_api_info.description}"
+      Util::msg ''
     end
 
     # print API parameters
     private def print_api_parameters
       Util::print_bold_line "Parameters:"
-      puts
+      Util::msg ''
       if @target_api_info.params.empty?
-        puts "\tNo parameters."
+        Util::msg "\tNo parameters."
       else
         @target_api_info.params.each do |param|
           print_api_parameter(param)
@@ -71,7 +71,7 @@ module Jirest
 
     # print each API parameter
     private def print_api_parameter(param)
-      puts "\t#{param['name']} (#{param['type']}):"
+      Util::msg "\t#{param['name']} (#{param['type']}):"
       print_as_multiple_lines(param['description'],"\t\t")
     end
 
@@ -85,14 +85,14 @@ module Jirest
       # TODO : prevent the word in the end of line from being splitting into multiple part
       # e.g. 'Pseudoantidisestablishmentarianism' -> 'Pseudoantidisest' + 'ablishmentarianism'
       str.scan(/.{1,#{max}}/).each do |line|
-        puts "#{prefix}#{line}"
+        Util::msg "#{prefix}#{line}"
       end
     end
 
     # print API template
     private def print_api_template
       Util::print_bold_line "Template:"
-      puts
+      Util::msg ''
       @target_api_info.command.lines.each do |line|
         Util::print_gray_line("#{line}")
       end
@@ -104,8 +104,8 @@ module Jirest
         return
       end
 
-      STDERR.puts "please input parameters."
-      STDERR.puts
+      Util::msg "please input parameters."
+      Util::msg ''
       @target_api_info.params.each do |param|
         STDERR.puts "#{param['name']} (#{param['type']}):"
         STDERR.print '> '
@@ -127,7 +127,7 @@ module Jirest
       end
 
       if value == 'n'
-        STDERR.puts 'exit process.'
+        Util::msg 'exit process.'
         exit
       end
     end
@@ -157,7 +157,7 @@ module Jirest
     def describe
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
-      puts
+      Util::msg ''
       print_api_description
       print_api_parameters
       print_api_template
@@ -178,12 +178,12 @@ module Jirest
       @target_api_info = @apis.get(target_api_name)
       ask_params
       command = generate_curl_command
-      STDERR.puts "the following command is going to be executed."
-      STDERR.puts
-      STDERR.puts "`#{command}`"
-      STDERR.puts
+      Util::msg "the following command is going to be executed."
+      Util::msg ''
+      Util::msg "`#{command}`"
+      Util::msg ''
       ask_if_proceed
-      STDERR.puts
+      Util::msg ''
       IO.popen(command, :err => [:child, :out]) do |io|
         puts io.gets.chomp
       end
@@ -216,10 +216,11 @@ module Jirest
           new_template.chomp!
         end
 
+        # if template is updated, store the new version
         if template != new_template
           @templates[target_api_name] = new_template
           Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
-          STDERR.puts 'template is successfully stored.'
+          Util::msg 'template is successfully stored.'
         end
       end
     end
