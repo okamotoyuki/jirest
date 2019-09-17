@@ -71,7 +71,7 @@ module Jirest
 
     # print each API parameter
     private def print_api_parameter(param)
-      Util::msg "\t#{param['name']} (#{param['type']}):"
+      Util::msg "\t◇ #{param['name']} (#{param['type']}):"
       print_as_multiple_lines(param['description'],"\t\t")
     end
 
