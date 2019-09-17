@@ -37,37 +37,37 @@ module Jirest
       puts str
     end
 
-    def self.load_api_definition
+    def self.load_api_definition(data_dir)
       json = nil
       begin
-        json = File.read('./data/api.json')
+        json = File.read(data_dir + '/api.json')
       rescue => e
         error 'failed to load API definition!'
       end
       return json
     end
 
-    def self.dump_api_definition(json)
+    def self.dump_api_definition(data_dir, json)
       begin
-        File.write('./data/api.json', json)
+        File.write(data_dir + '/api.json', json)
       rescue => e
         error 'failed to store API definition!'
       end
     end
 
-    def self.load_user_definition
+    def self.load_user_definition(data_dir)
       json = nil
       begin
-        json = File.read('./data/user.json')
+        json = File.read(data_dir + '/user.json')
       rescue => e
         # do nothing
       end
       return json
     end
 
-    def self.dump_user_definition(json)
+    def self.dump_user_definition(data_dir, json)
       begin
-        File.write('./data/user.json', json)
+        File.write(data_dir + '/user.json', json)
       rescue => e
         error 'failed to store user definition!'
       end

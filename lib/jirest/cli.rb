@@ -2,6 +2,9 @@ require "jirest"
 require "thor"
 
 module Jirest
+
+  DATA_DIR = './data'
+
   class Cli < Thor
 
     desc "describe", "describe"
@@ -12,7 +15,7 @@ module Jirest
 
     desc "update", "update"
     def update
-      api_def = Util::load_api_definition
+      api_def = Util::load_api_definition(DATA_DIR)
       ApiInfoUpdater.new(api_def).update
     end
 

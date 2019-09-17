@@ -5,16 +5,16 @@ module Jirest
   class CommandExecutor
 
     def initialize
-      api_def = Util::load_api_definition
+      api_def = Util::load_api_definition(DATA_DIR)
       if api_def.nil?
         ApiInfoUpdater.new.update
-        api_def = Util::load_api_definition
+        api_def = Util::load_api_definition(DATA_DIR)
       end
       @apis = ApiInfoTable.new(api_def)   # API table
       @params = {}                        # parameters
 
       @templates = {}                     # curl command templates
-      user_def = Util::load_user_definition
+      user_def = Util::load_user_definition(DATA_DIR)
       @templates = JSON.parse(user_def) unless user_def.nil?
     end
 
@@ -218,7 +218,7 @@ module Jirest
 
         if template != new_template
           @templates[target_api_name] = new_template
-          Util::dump_user_definition(JSON.generate(@templates))
+          Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
           STDERR.puts 'template is successfully stored.'
         end
       end

@@ -180,7 +180,7 @@ module Jirest
     # update API information
     def update
       if is_api_changed
-        Util::dump_api_definition(@latest_apis.serialize)
+        Util::dump_api_definition(DATA_DIR, @latest_apis.serialize)
       else
         Util::msg 'API Info is up to date.'
       end
