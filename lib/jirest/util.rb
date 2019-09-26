@@ -74,7 +74,7 @@ module Jirest
     end
 
     def self.load_config
-      return YAML.load_file(ENV['HOME'] + '/.jirest.yml')
+      return YAML.load_file(Jirest::DATA_DIR + '/conf.yml')
     end
 
   end
