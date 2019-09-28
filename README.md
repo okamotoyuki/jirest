@@ -1,38 +1,91 @@
-# Jirest
+# jirest
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/jirest`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+*jirest* is a command line tool to use Jira REST API easily and interactively from command line.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+On macOS,
 
-```ruby
-gem 'jirest'
-```
+1. Install [peco](https://github.com/peco/peco) and the dependencies.
 
-And then execute:
+    ```
+    $ ./bin/setup
+    ```
 
-    $ bundle
+2. Edit `data/conf.yml` and add your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
 
-Or install it yourself as:
+Also, if you use [docker](https://www.docker.com/), you don't need to install specific software and run the command on docker container.
 
-    $ gem install jirest
+1. Create *jirest* data directory under your `$HOME`.
+
+    ```
+    $ mkdir $HOME/.jirest
+    ```
+
+2. Copy all files under `data` directories to `$HOME/.jirest`.
+
+    ```
+    $ cp data/* $HOME/.jirest
+    ```
+
+3. Edit `$HOME/.jirest/conf.yml` and add your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+4. Now, you can use *jirest* with the following command.
+
+    ```
+    $ docker run -it --rm -v $HOME/.jirest:/root/jirest/data jirest
+    ```
+    
+    We recommend you to add the following line to your `.bashrc`.
+    
+    ```
+    alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data jirest'
+    ```
 
 ## Usage
 
-TODO: Write usage instructions here
+- Show information of a Jira REST API.
+
+    ```
+    $ jirest describe
+    ```
+    
+- Generate a curl command to use a Jira REST API.
+
+    ```
+    $ jirest dryrun
+    ```
+    
+- Edit a request template for a Jira REST API.
+
+    ```
+    $ jirest edit
+    ```
+    
+- Execute a curl command to use a Jira REST API.
+
+    ```
+    $ jirest exec
+    ```
+    
+- Describe available commands or one specific command.
+
+    ```
+    $ jirest help [COMMAND]
+    ```
+
+- Update all API definitions
+
+    ```
+    $ jirest update
+    ```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `bundle exec rake test` to run the tests.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/jirest. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/okamotoyuki/jirest. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +93,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Jirest project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/jirest/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the jirest project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/okamotoyuki/jirest/blob/master/CODE_OF_CONDUCT.md).

@@ -7,31 +7,31 @@ module Jirest
 
   class Cli < Thor
 
-    desc "describe", "Describe a Jira REST API."
+    desc "describe", "Show information of a Jira REST API"
     def describe
       command_generator = CommandExecutor.new
       command_generator.describe
     end
 
-    desc "update", "Update all API information."
+    desc "update", "Update all API definitions"
     def update
       api_def = Util::load_api_definition(DATA_DIR)
       ApiInfoUpdater.new(api_def).update
     end
 
-    desc "dryrun", "Generate a curl command to call Jira REST API."
+    desc "dryrun", "Generate a curl command to use a Jira REST API"
     def dryrun
       command_generator = CommandExecutor.new
       command_generator.dryrun
     end
 
-    desc "exec", "Execute a curl command to call Jira REST API."
+    desc "exec", "Execute a curl command to use a Jira REST API"
     def exec
       command_generator = CommandExecutor.new
       command_generator.exec
     end
 
-    desc "edit", "Edit a template for Jira REST API."
+    desc "edit", "Edit a request template for a Jira REST API"
     def edit
       command_generator = CommandExecutor.new
       command_generator.edit
