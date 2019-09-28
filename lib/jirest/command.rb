@@ -144,8 +144,11 @@ module Jirest
       # load config
       conf = Util::load_config
 
+      # add option
+      command.gsub!('curl', 'curl -s')
+
       # embed credentials
-      command.gsub!('curl', "curl -s -u:#{conf['user']}:#{conf['token']}")
+      command.gsub!("--user 'email@example.com:<api_token>'", "--user #{conf['user']}:#{conf['token']}")
 
       # embed Jira Base URL
       command.gsub!('--url \'', "--url '#{conf['base-url']}")

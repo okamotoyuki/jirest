@@ -2,6 +2,9 @@ FROM ruby:2.3.3-alpine
 
 LABEL maintainer="Yuki Okamoto <okamoto.yuki.0130@gmail.com>"
 
+# install curl
+RUN apk add --no-cache curl
+
 # install peco
 WORKDIR /tmp
 RUN apk add --no-cache openssl

@@ -32,16 +32,18 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
 4. Now, you can use *jirest* with the following command.
 
     ```
-    $ docker run -it --rm -v $HOME/.jirest:/root/jirest/data jirest
+    $ docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest
     ```
     
     We recommend you to add the following line to your `.bashrc`.
     
     ```
-    alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data jirest'
+    alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest'
     ```
 
 ## Usage
+
+![jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
 
 - Show information of a Jira REST API.
 
