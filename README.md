@@ -64,12 +64,18 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
     $ jirest dryrun
     ```
     
-- Edit a request template for a Jira REST API.
+- Edit a request template for a Jira REST API. You can embed request parameters as `{paramName}`.
 
     ```
     $ jirest edit
     ```
     
+- Revert a request template for a Jira REST API back to the default.
+
+    ```
+    $ jirest revert
+    ```
+
 - Execute a curl command to use a Jira REST API.
 
     ```

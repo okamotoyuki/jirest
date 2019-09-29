@@ -93,7 +93,8 @@ module Jirest
     private def print_api_template
       Util::print_bold_line "Template:"
       Util::msg ''
-      @target_api_info.command.lines.each do |line|
+      template = @templates[@target_api_info.name] || @target_api_info.command
+      template.lines.each do |line|
         Util::print_gray_line("#{line}")
       end
     end
@@ -196,8 +197,7 @@ module Jirest
     def edit
       target_api_name = peco(print_api_names)
       @target_api_info = @apis.get(target_api_name)
-      template = @templates[target_api_name]
-      template = @target_api_info.command if template.nil?
+      template = @templates[@target_api_info.name] || @target_api_info.command
 
       Tempfile.open do |tmp|
         # print parameter information as a comments
@@ -223,9 +223,17 @@ module Jirest
         if template != new_template
           @templates[target_api_name] = new_template
           Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
-          Util::msg 'template is successfully stored.'
+          Util::msg 'template was successfully stored.'
         end
       end
+    end
+
+    # revert curl command template
+    def revert
+      target_api_name = peco(print_api_names)
+      @templates.delete(target_api_name)
+      Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
+      Util::msg 'template was successfully reverted.'
     end
   end
 

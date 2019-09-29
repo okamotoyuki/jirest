@@ -48,5 +48,10 @@ module Jirest
       command_generator.edit
     end
 
+    desc "revert", "Revert a request template for a Jira REST API back to the default"
+    def revert
+      command_generator = CommandExecutor.new
+      command_generator.revert
+    end
   end
 end
