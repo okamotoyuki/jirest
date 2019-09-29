@@ -134,7 +134,7 @@ module Jirest
 
     # generate executable curl command
     private def generate_curl_command
-      command = @target_api_info.command
+      command = @templates[@target_api_info.name] || @target_api_info.command
 
       # embed parameters
       @params.each do |key, value|
