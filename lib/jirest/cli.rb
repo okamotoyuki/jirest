@@ -10,7 +10,7 @@ module Jirest
     desc "init", "Initialize jirest config"
     def init
       ConfigManager.new.init_config(DATA_DIR)
-      Util::revert_api_definition(DATA_DIR)
+      Util::reset_api_definition(DATA_DIR)
     end
 
     desc "describe", "Show information of a Jira REST API"
@@ -25,9 +25,9 @@ module Jirest
       ApiInfoUpdater.new(api_def).update
     end
 
-    desc "revert", "Revert all API definitions back to the stable version"
-    def revert
-      Util::revert_api_definition(DATA_DIR)
+    desc "reset", "Reset all API definitions to the stable version"
+    def reset
+      Util::reset_api_definition(DATA_DIR)
     end
 
     desc "dryrun", "Generate a curl command to use a Jira REST API"

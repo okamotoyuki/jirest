@@ -73,9 +73,9 @@ module Jirest
       end
     end
 
-    def self.revert_api_definition(data_dir)
+    def self.reset_api_definition(data_dir)
       `cp -r api-stable.json #{data_dir}/api.json`
-      msg 'API Info was reverted back to the stable version.'
+      msg 'API Info was reset to the stable version.'
     end
 
   end

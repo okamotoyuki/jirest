@@ -44,7 +44,7 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
 
 ## Usage
 
-[jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
+![jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
 
 - Initialize jirest config.
 
@@ -88,10 +88,10 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
     $ jirest update
     ```
 
-- Revert all API definitions back to the stable version.
+- Reset all API definitions to the stable version.
 
     ```
-    $ jirest revert
+    $ jirest reset
     ```
 
 ## Development
