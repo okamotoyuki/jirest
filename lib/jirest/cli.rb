@@ -19,6 +19,11 @@ module Jirest
       ApiInfoUpdater.new(api_def).update
     end
 
+    desc "revert", "Revert all API definitions back to the stable version"
+    def revert
+      Util::revert_api_definition(DATA_DIR)
+    end
+
     desc "dryrun", "Generate a curl command to use a Jira REST API"
     def dryrun
       command_generator = CommandExecutor.new
