@@ -2,8 +2,9 @@ FROM ruby:2.3.3-alpine
 
 LABEL maintainer="Yuki Okamoto <okamoto.yuki.0130@gmail.com>"
 
-# install curl
+# install vim and curl
 RUN apk add --no-cache curl
+RUN apk add --no-cache vim
 
 # install peco
 WORKDIR /tmp
