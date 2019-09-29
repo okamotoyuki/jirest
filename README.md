@@ -1,6 +1,6 @@
 # jirest
 
-*jirest* is a command line tool to use Jira REST API easily and interactively from command line.
+*jirest* is a command line tool to use Jira REST API easily and interactively.
 
 ## Installation
 
