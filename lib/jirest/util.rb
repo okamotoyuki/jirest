@@ -73,10 +73,6 @@ module Jirest
       end
     end
 
-    def self.load_config
-      return YAML.load_file(Jirest::DATA_DIR + '/conf.yml')
-    end
-
     def self.revert_api_definition(data_dir)
       `cp -r api-stable.json #{data_dir}/api.json`
       msg 'API Info was reverted back to the stable version.'

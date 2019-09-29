@@ -142,7 +142,7 @@ module Jirest
       end
 
       # load config
-      conf = Util::load_config
+      conf = ConfigManager.new.load_config(DATA_DIR)
 
       # add option
       command.gsub!('curl', 'curl -s')

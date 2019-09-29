@@ -12,7 +12,11 @@ On macOS,
     $ ./bin/setup
     ```
 
-2. Edit `data/conf.yml` and add your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+2.  Run the following command to setup your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+
+    ```
+    $ bundle exec exe/jirest init
+    ```
 
 Also, if you use [docker](https://www.docker.com/), you don't need to install specific software and run the command on docker container.
 
@@ -21,15 +25,7 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
     ```
     $ mkdir $HOME/.jirest
     ```
-
-2. Copy all files under `data` directories to `$HOME/.jirest`.
-
-    ```
-    $ cp data/* $HOME/.jirest
-    ```
-
-3. Edit `$HOME/.jirest/conf.yml` and add your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
-4. Now, you can use *jirest* with the following command.
+2. Now, you can use *jirest* with the following command.
 
     ```
     $ docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest
@@ -40,10 +36,21 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
     ```
     alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest'
     ```
+3. Run `jirest init` command to setup your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+
+    ```
+    $ jirest init
+    ```
 
 ## Usage
 
-![jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
+[jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
+
+- Initialize jirest config.
+
+    ```
+    $ jirest init
+    ```
 
 - Show information of a Jira REST API.
 
@@ -79,6 +86,12 @@ Also, if you use [docker](https://www.docker.com/), you don't need to install sp
 
     ```
     $ jirest update
+    ```
+
+- Revert all API definitions back to the stable version.
+
+    ```
+    $ jirest revert
     ```
 
 ## Development

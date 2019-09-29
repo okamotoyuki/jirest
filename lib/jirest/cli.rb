@@ -7,6 +7,12 @@ module Jirest
 
   class Cli < Thor
 
+    desc "init", "Initialize jirest config"
+    def init
+      ConfigManager.new.init_config(DATA_DIR)
+      Util::revert_api_definition(DATA_DIR)
+    end
+
     desc "describe", "Show information of a Jira REST API"
     def describe
       command_generator = CommandExecutor.new
