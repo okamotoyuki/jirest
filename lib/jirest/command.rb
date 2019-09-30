@@ -33,7 +33,19 @@ module Jirest
         IO.popen('peco --select-1', 'r+') do |io|
           io.puts(input)
           io.close_write
-          return io.gets.chomp
+          return io.gets&.chomp
+        end
+      end
+      return nil
+    end
+
+    # execute jq command
+    private def jq(input)
+      unless input.nil?
+        IO.popen('jq 1>&2', 'r+') do |io|
+          io.puts(input)
+          io.close_write
+          return io.gets&.chomp
         end
       end
       return nil
@@ -189,7 +201,7 @@ module Jirest
       ask_if_proceed
       Util::msg ''
       IO.popen(command, :err => [:child, :out]) do |io|
-        puts io.gets.chomp
+        puts(jq(io.gets&.chomp))
       end
     end
 
