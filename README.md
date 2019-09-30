@@ -4,21 +4,7 @@
 
 ## Installation
 
-On macOS,
-
-1. Install [peco](https://github.com/peco/peco) and the dependencies.
-
-    ```
-    $ ./bin/setup
-    ```
-
-2.  Run the following command to setup your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
-
-    ```
-    $ bundle exec exe/jirest init
-    ```
-
-Also, if you use [docker](https://www.docker.com/), you don't need to install specific software and run the command on docker container.
+*jirest* is provided as [docker image](https://docs.docker.com/get-started/#images-and-containers) so you don't need to install any dependencies on your local machine.
 
 1. Create *jirest* data directory under your `$HOME`.
 
