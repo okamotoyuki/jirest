@@ -96,7 +96,7 @@ module Jirest
 
       # TODO : prevent the word in the end of line from being splitting into multiple part
       # e.g. 'Pseudoantidisestablishmentarianism' -> 'Pseudoantidisest' + 'ablishmentarianism'
-      str.scan(/.{1,#{max}}/).each do |line|
+      str&.scan(/.{1,#{max}}/)&.each do |line|
         Util::msg "#{prefix}#{line}"
       end
     end
