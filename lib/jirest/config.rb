@@ -7,7 +7,7 @@ module Jirest
     def load_config(data_dir)
       config = nil
       begin
-        config = YAML.load_file(Jirest::DATA_DIR + '/conf.yml')
+        config = YAML.load_file(data_dir + '/conf.yml')
       rescue
         Util::error 'unable to load config!'
         Util::msg 'please run "jirest init" command first to initialize config.'
@@ -49,7 +49,7 @@ module Jirest
       config['user'] = user
       config['token'] = token
 
-      YAML.dump(config, File.open(Jirest::DATA_DIR + '/conf.yml', 'w'))
+      YAML.dump(config, File.open(data_dir + '/conf.yml', 'w'))
 
       Util::msg 'new config was created.'
     end

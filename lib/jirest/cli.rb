@@ -15,7 +15,7 @@ module Jirest
 
     desc "describe", "Show information of a Jira REST API"
     def describe
-      command_generator = CommandExecutor.new
+      command_generator = CommandExecutor.new(DATA_DIR)
       command_generator.describe
     end
 
@@ -32,25 +32,25 @@ module Jirest
 
     desc "dryrun", "Generate a curl command to use a Jira REST API"
     def dryrun
-      command_generator = CommandExecutor.new
+      command_generator = CommandExecutor.new(DATA_DIR)
       command_generator.dryrun
     end
 
     desc "exec", "Execute a curl command to use a Jira REST API"
     def exec
-      command_generator = CommandExecutor.new
+      command_generator = CommandExecutor.new(DATA_DIR)
       command_generator.exec
     end
 
     desc "edit", "Edit a request template for a Jira REST API"
     def edit
-      command_generator = CommandExecutor.new
+      command_generator = CommandExecutor.new(DATA_DIR)
       command_generator.edit
     end
 
     desc "revert", "Revert a request template for a Jira REST API back to the default"
     def revert
-      command_generator = CommandExecutor.new
+      command_generator = CommandExecutor.new(DATA_DIR)
       command_generator.revert
     end
   end

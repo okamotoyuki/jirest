@@ -4,17 +4,19 @@ module Jirest
 
   class CommandExecutor
 
-    def initialize
-      api_def = Util::load_api_definition(DATA_DIR)
+    def initialize(data_dir)
+      @data_dir = data_dir
+
+      api_def = Util::load_api_definition(@data_dir)
       if api_def.nil?
         ApiInfoUpdater.new.update
-        api_def = Util::load_api_definition(DATA_DIR)
+        api_def = Util::load_api_definition(@data_dir)
       end
       @apis = ApiInfoTable.new(api_def)   # API table
       @params = {}                        # parameters
 
       @templates = {}                     # curl command templates
-      user_def = Util::load_user_definition(DATA_DIR)
+      user_def = Util::load_user_definition(@data_dir)
       @templates = JSON.parse(user_def) unless user_def.nil?
     end
 
@@ -155,7 +157,7 @@ module Jirest
       end
 
       # load config
-      conf = ConfigManager.new.load_config(DATA_DIR)
+      conf = ConfigManager.new.load_config(@data_dir)
 
       # add option
       command.gsub!('curl', 'curl -s')
@@ -234,7 +236,7 @@ module Jirest
         # if template is updated, store the new version
         if template != new_template
           @templates[target_api_name] = new_template
-          Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
+          Util::dump_user_definition(@data_dir, JSON.generate(@templates))
           Util::msg 'template was successfully stored.'
         end
       end
@@ -244,7 +246,7 @@ module Jirest
     def revert
       target_api_name = peco(print_api_names)
       @templates.delete(target_api_name)
-      Util::dump_user_definition(DATA_DIR, JSON.generate(@templates))
+      Util::dump_user_definition(@data_dir, JSON.generate(@templates))
       Util::msg 'template was successfully reverted.'
     end
   end
