@@ -4,26 +4,26 @@ module Jirest
 
   class CommandExecutor
 
-    def initialize(data_dir)
-      @data_dir = data_dir
+    def initialize
+      @api_table = ApiInfoTable.new            # API definitions
+      @api_table.load_apis
 
-      api_def = Util::load_api_definition(@data_dir)
-      if api_def.nil?
-        ApiInfoUpdater.new.update
-        api_def = Util::load_api_definition(@data_dir)
+      # get latest API definitions if not exists
+      if @api_table.size == 0
+        ApiInfoUpdater.new(@api_table).update
+        @api_table.load_apis
       end
-      @apis = ApiInfoTable.new(api_def)   # API table
-      @params = {}                        # parameters
 
+      @params = {}                        # parameters
       @templates = {}                     # curl command templates
-      user_def = Util::load_user_definition(@data_dir)
+      user_def = Util::load_user_def
       @templates = JSON.parse(user_def) unless user_def.nil?
     end
 
     # print API names
     private def print_api_names
       str = ''
-      @apis.keys.sort.each do |key|
+      @api_table.keys.sort.each do |key|
         str += "#{key}\n"
       end
       return str.chomp
@@ -80,7 +80,7 @@ module Jirest
           print_api_parameter(param)
         end
       end
-      puts
+      Jirest::stdout.puts
     end
 
     # print each API parameter
@@ -122,11 +122,11 @@ module Jirest
       Util::msg "please input parameters."
       Util::msg ''
       @target_api_info.params.each do |param|
-        STDERR.puts "#{param['name']} (#{param['type']}):"
-        STDERR.print '> '
-        value = STDIN.gets.chomp
+        Jirest::stderr.puts "#{param['name']} (#{param['type']}):"
+        Jirest::stderr.print '> '
+        value = Jirest::stdin.gets.chomp
         @params[param['name']] = value
-        STDERR.puts
+        Jirest::stderr.puts
       end
     end
 
@@ -136,9 +136,9 @@ module Jirest
       value = ''
 
       while not regex.match(value) do
-        STDERR.puts "do you want to proceed? (y/n)"
-        STDERR.print '> '
-        value = STDIN.gets.chomp
+        Jirest::stderr.puts "do you want to proceed? (y/n)"
+        Jirest::stderr.print '> '
+        value = Jirest::stdin.gets.chomp
       end
 
       if value == 'n'
@@ -157,7 +157,7 @@ module Jirest
       end
 
       # load config
-      conf = ConfigManager.new.load_config(@data_dir)
+      conf = ConfigManager.new.load_config
 
       # add option
       command.gsub!('curl', 'curl -s')
@@ -174,7 +174,7 @@ module Jirest
     # describe API information
     def describe
       target_api_name = peco(print_api_names)
-      @target_api_info = @apis.get(target_api_name)
+      @target_api_info = @api_table.get(target_api_name)
       Util::msg ''
       print_api_description
       print_api_parameters
@@ -184,16 +184,16 @@ module Jirest
     # print curl command for API request
     def dryrun
       target_api_name = peco(print_api_names)
-      @target_api_info = @apis.get(target_api_name)
+      @target_api_info = @api_table.get(target_api_name)
       ask_params
       command = generate_curl_command
-      puts command
+      Jirest::stdout.puts command
     end
 
     # execute curl command for API request
     def exec
       target_api_name = peco(print_api_names)
-      @target_api_info = @apis.get(target_api_name)
+      @target_api_info = @api_table.get(target_api_name)
       ask_params
       command = generate_curl_command
       Util::msg "the following command is going to be executed."
@@ -203,14 +203,14 @@ module Jirest
       ask_if_proceed
       Util::msg ''
       IO.popen(command, :err => [:child, :out]) do |io|
-        puts(jq(io.gets&.chomp))
+        Jirest::stdout.puts(jq(io.gets&.chomp))
       end
     end
 
     # edit curl command template
     def edit
       target_api_name = peco(print_api_names)
-      @target_api_info = @apis.get(target_api_name)
+      @target_api_info = @api_table.get(target_api_name)
       template = @templates[@target_api_info.name] || @target_api_info.command
 
       Tempfile.open do |tmp|
@@ -236,7 +236,7 @@ module Jirest
         # if template is updated, store the new version
         if template != new_template
           @templates[target_api_name] = new_template
-          Util::dump_user_definition(@data_dir, JSON.generate(@templates))
+          Util::dump_user_def(JSON.generate(@templates))
           Util::msg 'template was successfully stored.'
         end
       end
@@ -246,7 +246,7 @@ module Jirest
     def revert
       target_api_name = peco(print_api_names)
       @templates.delete(target_api_name)
-      Util::dump_user_definition(@data_dir, JSON.generate(@templates))
+      Util::dump_user_def(JSON.generate(@templates))
       Util::msg 'template was successfully reverted.'
     end
   end

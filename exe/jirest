@@ -2,4 +2,8 @@
 
 require "jirest"
 
+Jirest::data_dir = './data'
+Jirest::stdin = STDIN
+Jirest::stdout = STDOUT
+Jirest::stderr = STDERR
 Jirest::Cli.start

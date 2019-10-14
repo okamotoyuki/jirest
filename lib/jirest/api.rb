@@ -36,9 +36,8 @@ module Jirest
   # A class which store all the REST API information
   class ApiInfoTable
 
-    def initialize(json=nil)
+    def initialize
       @hash = {}
-      deserialize(json) unless json.nil?
     end
 
     def set(name, api_info)
@@ -65,8 +64,29 @@ module Jirest
       end
     end
 
+    # load API definition
+    def load_apis
+      json = '{}'
+      begin
+        json = File.read(Jirest::data_dir + '/api.json')
+      rescue => e
+        Util::error('failed to load API definition!')
+      end
+      deserialize(json)
+    end
+
+    # dump API definition
+    def dump_apis
+      json = serialize
+      begin
+        File.write(Jirest::data_dir + '/api.json', json)
+      rescue => e
+        Util::error 'failed to store API definition!'
+      end
+    end
+
     # convert Ruby object information to json
-    def serialize
+    private def serialize
       obj = {}
       @hash.each do |key, value|
         api = {}
@@ -95,15 +115,14 @@ module Jirest
   # A class which is for updating REST API information
   class ApiInfoUpdater
 
-    def initialize(api_def=nil)
-      Util::msg 'API information updating...' if api_def.nil?
-      @current_apis = ApiInfoTable.new(api_def)
-      @latest_apis = get_latest_apis
+    def initialize(current_api_table)
+      @current_api_table = current_api_table
+      @latest_api_table = get_latest_api_table
     end
 
     # retrieve the latest API information
-    private def get_latest_apis
-      latest_apis = ApiInfoTable.new
+    private def get_latest_api_table
+      latest_api_table = ApiInfoTable.new
 
       charset = nil
       html = open(API_DOC_URI) do |f|
@@ -161,20 +180,20 @@ module Jirest
         end
         next if command.nil?
 
-        latest_apis.set(name, ApiInfo.new(name, path, description, params, command))
+        latest_api_table.set(name, ApiInfo.new(name, path, description, params, command))
       end
 
-      return latest_apis
+      return latest_api_table
     end
 
     # check if any API is changed on the API reference
     private def is_api_changed
       # true if number of APIs is changed
-      ret = @current_apis.size != @latest_apis.size
+      ret = @current_api_table.size != @latest_api_table.size
 
       # true if digest of each API is changed
-      @current_apis.each do |key, value|
-        latest_api = @latest_apis.get(key)
+      @current_api_table.each do |key, value|
+        latest_api = @latest_api_table.get(key)
         if latest_api.nil? || (latest_api.digest != value.digest)
           ret = true
           Util::msg "'#{key}' API was updated."
@@ -185,8 +204,9 @@ module Jirest
 
     # update API information
     def update
+      Util::msg 'API information updating...'
       if is_api_changed
-        Util::dump_api_definition(DATA_DIR, @latest_apis.serialize)
+        @latest_api_table.dump_apis
       else
         Util::msg 'API Info is up to date.'
       end
