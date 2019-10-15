@@ -50,3 +50,36 @@ class ApiInfoTableTest < Minitest::Test
 
 end
 
+
+class ApiInfoUpdaterTest < Minitest::Test
+
+  def setup
+    Jirest.data_dir = './test/data'
+    Jirest::stdin = STDIN
+    Jirest::stdout = STDOUT
+    Jirest::stderr = StringIO.new('test', 'r+')
+    `mkdir -p #{Jirest.data_dir}`
+  end
+
+  def teardown
+    `rm -rf #{Jirest.data_dir}`
+  end
+
+  def test_update
+    current_api_table = Jirest::ApiInfoTable.new
+    Jirest::ApiInfoUpdater.new(current_api_table).update
+    latest_api_table = Jirest::ApiInfoTable.new
+    latest_api_table.load_apis
+
+    assert latest_api_table.size > 0                  # number of APIs
+    regex =                                           # regex for matching API name
+        /^([a-z|A-Z|\(|\)|']+ )+[a-z|A-Z|\(|\)|']+$/
+    is_correct_api_name = true
+    latest_api_table.keys.each do |key|
+      is_correct_api_name &= (key =~ regex)
+    end
+    assert is_correct_api_name
+  end
+
+end
+

@@ -135,7 +135,7 @@ module Jirest
       regex = /^[ny]$/
       value = ''
 
-      while not regex.match(value) do
+      while not value =~ regex do
         Jirest::stderr.puts "do you want to proceed? (y/n)"
         Jirest::stderr.print '> '
         value = Jirest::stdin.gets.chomp
