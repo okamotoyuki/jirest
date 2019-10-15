@@ -65,6 +65,16 @@ class ApiInfoUpdaterTest < Minitest::Test
     `rm -rf #{Jirest.data_dir}`
   end
 
+  def test_is_api_changed
+    table1 = Jirest::ApiInfoTable.new
+    Jirest::ApiInfoUpdater.new(table1).update
+    table2 = Jirest::ApiInfoTable.new
+    table2.load_apis
+    Jirest::ApiInfoUpdater.new(table2).update
+    Jirest::stderr.rewind
+    assert Jirest::stderr.read.include?('API Info is up to date.')
+  end
+
   def test_update
     current_api_table = Jirest::ApiInfoTable.new
     Jirest::ApiInfoUpdater.new(current_api_table).update
