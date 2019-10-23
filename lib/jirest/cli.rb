@@ -12,13 +12,13 @@ module Jirest
     desc "init", "Initialize jirest config"
     def init
       ConfigManager.new.init_config
-      Util::reset_api_definition
+      Util::reset_apis
     end
 
-    desc "describe", "Show information of a Jira REST API"
-    def describe
+    desc "describe [KEYWORD]", "Show information of a Jira REST API"
+    def describe(keyword=nil)
       command_executor = CommandExecutor.new
-      command_executor.describe
+      command_executor.describe(keyword)
     end
 
     desc "update", "Update all API definitions"
@@ -33,28 +33,28 @@ module Jirest
       Util::reset_apis
     end
 
-    desc "dryrun", "Generate a curl command to use a Jira REST API"
-    def dryrun
+    desc "dryrun [KEYWORD]", "Generate a curl command to use a Jira REST API"
+    def dryrun(keyword=nil)
       command_executor = CommandExecutor.new
-      command_executor.dryrun
+      command_executor.dryrun(keyword)
     end
 
-    desc "exec", "Execute a curl command to use a Jira REST API"
-    def exec
+    desc "exec [KEYWORD]", "Execute a curl command to use a Jira REST API"
+    def exec(keyword=nil)
       command_executor = CommandExecutor.new
-      command_executor.exec
+      command_executor.exec(keyword)
     end
 
-    desc "edit", "Edit a request template for a Jira REST API"
-    def edit
+    desc "edit [KEYWORD]", "Edit a request template for a Jira REST API"
+    def edit(keyword=nil)
       command_executor = CommandExecutor.new
-      command_executor.edit
+      command_executor.edit(keyword)
     end
 
-    desc "revert", "Revert a request template for a Jira REST API back to the default"
-    def revert
+    desc "revert [KEYWORD]", "Revert a request template for a Jira REST API back to the default"
+    def revert(keyword=nil)
       command_executor = CommandExecutor.new
-      command_executor.revert
+      command_executor.revert(keyword)
     end
   end
 end

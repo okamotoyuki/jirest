@@ -29,6 +29,22 @@ module Jirest
       return str.chomp
     end
 
+    # execute grep command
+    private def grep(input, keyword)
+      unless input.nil? or keyword.nil?
+        IO.popen("grep -i '#{keyword}'", 'r+') do |io|
+          io.puts(input)
+          io.close_write
+          output = ""
+          io.each do |line|
+            output += line.chomp + "\n"
+          end
+          return output
+        end
+      end
+      return input
+    end
+
     # execute peco command
     private def peco(input)
       unless input.nil?
@@ -172,8 +188,8 @@ module Jirest
     end
 
     # describe API information
-    def describe
-      target_api_name = peco(print_api_names)
+    def describe(keyword)
+      target_api_name = peco(grep(print_api_names, keyword))
       @target_api_info = @api_table.get(target_api_name)
       Util::msg ''
       print_api_description
@@ -182,8 +198,8 @@ module Jirest
     end
 
     # print curl command for API request
-    def dryrun
-      target_api_name = peco(print_api_names)
+    def dryrun(keyword)
+      target_api_name = peco(grep(print_api_names, keyword))
       @target_api_info = @api_table.get(target_api_name)
       ask_params
       command = generate_curl_command
@@ -191,8 +207,8 @@ module Jirest
     end
 
     # execute curl command for API request
-    def exec
-      target_api_name = peco(print_api_names)
+    def exec(keyword)
+      target_api_name = peco(grep(print_api_names, keyword))
       @target_api_info = @api_table.get(target_api_name)
       ask_params
       command = generate_curl_command
@@ -208,8 +224,8 @@ module Jirest
     end
 
     # edit curl command template
-    def edit
-      target_api_name = peco(print_api_names)
+    def edit(keyword)
+      target_api_name = peco(grep(print_api_names, keyword))
       @target_api_info = @api_table.get(target_api_name)
       template = @templates[@target_api_info.name] || @target_api_info.command
 
@@ -243,8 +259,8 @@ module Jirest
     end
 
     # revert curl command template
-    def revert
-      target_api_name = peco(print_api_names)
+    def revert(keyword)
+      target_api_name = peco(grep(print_api_names, keyword))
       @templates.delete(target_api_name)
       Util::dump_user_def(JSON.generate(@templates))
       Util::msg 'template was successfully reverted.'
