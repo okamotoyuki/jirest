@@ -27,6 +27,7 @@ class ParamValidatorTest < Minitest::Test
   def test_validate_integer
     assert !Jirest::ParamValidator::validate('integer', '111111a')
     assert !Jirest::ParamValidator::validate('integer', '')
+    assert Jirest::ParamValidator::validate('integer', '0')
     assert Jirest::ParamValidator::validate('integer', '-123')
     assert Jirest::ParamValidator::validate('integer', '456')
   end

@@ -29,7 +29,7 @@ module Jirest
     end
 
     def self.validate_integer(param)
-      return param =~ /\A[+-]?[1-9][0-9]*\z/
+      return param =~ /\A[+-]?[0-9]+\z/
     end
 
     def self.validate_number(param)
