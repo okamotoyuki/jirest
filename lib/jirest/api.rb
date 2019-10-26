@@ -210,8 +210,9 @@ module Jirest
         root_api_elem = h3.parent
 
         # extract API method and path
-        http_method = h3.next.content.split(' ')[0]
-        path = h3.next.content.split(' ')[1]
+        method_path_pair = root_api_elem.css('p').first.content.split(' ')
+        http_method = method_path_pair[0]
+        path = method_path_pair[1]
 
         # extract API description
         description = h3.next.next.content
