@@ -22,23 +22,48 @@ module Jirest
     end
 
     private def normalize_command(command)
+
       if @http_method == 'GET' or @http_method == 'DELETE'
+        http_params_matcher = /--url '\/.+\?(.*)'/
+        md = command.match(http_params_matcher)
+        http_params_hash = {}
+
+        return command if md.nil? or md.size < 2
+        http_params = md[1].split('&') # HTTP params
+        http_params.each do |http_param|
+          http_param_pair = http_param.split('=')
+          http_params_hash[http_param_pair[0]] = http_param_pair[1]
+        end
+
         @params.each do |param|
           name = param['name']
 
           # check if the parameter is used in the command template
           next if command.include?("{#{name}}")
 
-          # TODO
+          # replace param value with template variable
+          http_params_hash[name] = "{#{name}}" if !http_params_hash[name].nil?
         end
-      else
-        body_matcher = /--data '({[\s\S]+})'/
-        md = command.match(body_matcher)
 
-        unless md.nil? or md.size < 2
-          body = md[1]  # HTTP request body
-          hash = JSON.parse(body)
+        # concat all the HTTP request params
+        http_params_str = ''
+        http_params_hash.each do |key, value|
+          http_params_str += "#{key}=#{value}&"
         end
+        http_params_str.chop! if http_params_str[-1] == '&' # remove the last '&' character
+
+        # update HTTP request params in the command template
+        url_matcher = /--url '(\/.+)\?.*'/
+        replacement = '--url \'\1' + '?' + http_params_str + '\''
+        command.gsub!(url_matcher, replacement)
+      else
+        http_params_matcher = /--data '({[\s\S]+})'/
+        md = command.match(http_params_matcher)
+
+        return command if md.nil? or md.size < 2
+
+        http_body = md[1]  # HTTP request body
+        http_body_hash = JSON.parse(http_body)
 
         @params.each do |param|
           name = param['name']
@@ -47,16 +72,16 @@ module Jirest
           next if command.include?("{#{name}}")
 
           # next if the command template has HTTP request body
-          next if hash.nil?
+          next if http_body_hash.nil?
 
           # replace param value with template variable
-          hash[name] = "{#{name}}" if !hash[name].nil?
+          http_body_hash[name] = "{#{name}}" if !http_body_hash[name].nil?
         end
 
         # update HTTP request body in the command template if any change
-        if !hash.nil?
-          body = JSON.pretty_generate(hash)
-          command.gsub!(body_matcher, "--data '#{body}'")
+        if !http_body_hash.nil?
+          http_body = JSON.pretty_generate(http_body_hash)
+          command.gsub!(http_params_matcher, "--data '#{http_body}'")
         end
       end
 
