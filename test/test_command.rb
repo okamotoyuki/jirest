@@ -7,7 +7,7 @@ class CommandExecutorTest < Minitest::Test
 
   def setup
     Jirest.data_dir = './test/data'
-    Jirest::stdin = StringIO.new("xxx\nyyy\nzzz", 'r+')
+    Jirest::stdin = StringIO.new("test", 'r+')
     Jirest::stdout = StringIO.new('test', 'r+')
     Jirest::stderr = StringIO.new('test', 'r+')
     `mkdir -p #{Jirest.data_dir}`
@@ -29,6 +29,7 @@ class CommandExecutorTest < Minitest::Test
   end
 
   def test_dryrun
+    Jirest::stdin = StringIO.new("filter\n1\n10", 'r+')
     command_executor = Jirest::CommandExecutor.new
     command_executor.dryrun("Get all dashboards")
     Jirest::stdout.rewind

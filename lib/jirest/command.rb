@@ -138,9 +138,18 @@ module Jirest
       Util::msg "please input parameters."
       Util::msg ''
       @target_api_info.params.each do |param|
-        Jirest::stderr.puts "#{param['name']} (#{param['type']}):"
-        Jirest::stderr.print '> '
-        value = Jirest::stdin.gets.chomp
+        name = param['name']
+        type = param['type']
+        value = ''
+        Jirest::stderr.puts "#{name} (#{type}):"
+
+        while true
+          Jirest::stderr.print '> '
+          value = Jirest::stdin.gets.chomp
+          break if ParamValidator.validate(type, value)
+          Util::error 'your input is not appropriate as the parameter. try again.'
+        end
+
         @params[param['name']] = value
         Jirest::stderr.puts
       end
