@@ -14,7 +14,7 @@ module Jirest
       when 'string'
         return validate_string(param)
       end
-      return false
+      return true
     end
 
     def self.validate_boolean(param)

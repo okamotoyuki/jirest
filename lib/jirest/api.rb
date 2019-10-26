@@ -17,18 +17,60 @@ module Jirest
       @path = path
       @description = description
       @params = params
-      @command = command
-      @digest = digest || calc_digest
+      @command = normalize_command(command)
+      @digest = digest || calc_digest(name, description, params, command)
+    end
+
+    private def normalize_command(command)
+      if @http_method == 'GET' or @http_method == 'DELETE'
+        @params.each do |param|
+          name = param['name']
+
+          # check if the parameter is used in the command template
+          next if command.include?("{#{name}}")
+
+          # TODO
+        end
+      else
+        body_matcher = /--data '({[\s\S]+})'/
+        md = command.match(body_matcher)
+
+        unless md.nil? or md.size < 2
+          body = md[1]  # HTTP request body
+          hash = JSON.parse(body)
+        end
+
+        @params.each do |param|
+          name = param['name']
+
+          # check if the parameter is used in the command template
+          next if command.include?("{#{name}}")
+
+          # next if the command template has HTTP request body
+          next if hash.nil?
+
+          # replace param value with template variable
+          hash[name] = "{#{name}}" if !hash[name].nil?
+        end
+
+        # update HTTP request body in the command template if any change
+        if !hash.nil?
+          body = JSON.pretty_generate(hash)
+          command.gsub!(body_matcher, "--data '#{body}'")
+        end
+      end
+
+      return command
     end
 
     # calculate digest of each API information
-    private def calc_digest
-      str = @name
-      str += @description
-      @params.each do |param|
+    private def calc_digest(name, description, params, command)
+      str = name
+      str += description
+      params.each do |param|
         str += param['name'] # param name
       end
-      str += @command
+      str += command
       return Digest::SHA256.hexdigest(str)
     end
 
