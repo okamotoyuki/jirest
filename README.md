@@ -41,31 +41,31 @@
 - Show information of a Jira REST API.
 
     ```
-    $ jirest describe
+    $ jirest describe [KEYWORD]
     ```
     
 - Generate a curl command to use a Jira REST API.
 
     ```
-    $ jirest dryrun
+    $ jirest dryrun [KEYWORD]
     ```
     
 - Edit a request template for a Jira REST API. You can embed request parameters as `{paramName}`.
 
     ```
-    $ jirest edit
+    $ jirest edit [KEYWORD]
     ```
     
 - Revert a request template for a Jira REST API back to the default.
 
     ```
-    $ jirest revert
+    $ jirest revert [KEYWORD]
     ```
 
 - Execute a curl command to use a Jira REST API.
 
     ```
-    $ jirest exec
+    $ jirest exec [KEYWORD]
     ```
     
 - Describe available commands or one specific command.
