@@ -13,8 +13,14 @@ module Jirest
         return validate_number(param)
       when 'string'
         return validate_string(param)
+      when 'anything'
+        return true
+      else
+        if type =~ /^Array<.+>$/
+          return true
+        end
       end
-      return true
+      return false
     end
 
     def self.validate_boolean(param)
