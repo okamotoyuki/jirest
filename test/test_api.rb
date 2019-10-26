@@ -34,7 +34,7 @@ class ApiInfoTableTest < Minitest::Test
 
   def test_dump_and_load_apis
     table = Jirest::ApiInfoTable.new
-    api = Jirest::ApiInfo.new('name', 'path', 'description', [], 'command')
+    api = Jirest::ApiInfo.new('name', 'http_method', 'path', 'description', [], 'command')
     table.set('name', api)
     table.dump_apis
     table2 = Jirest::ApiInfoTable.new

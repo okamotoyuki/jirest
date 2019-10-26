@@ -9,10 +9,11 @@ module Jirest
   # A class which stands REST API information
   class ApiInfo
 
-    attr_reader :name, :path, :description, :params, :command, :digest
+    attr_reader :name, :http_method, :path, :description, :params, :command, :digest
 
-    def initialize(name, path, description, params, command, digest=nil)
+    def initialize(name, http_method, path, description, params, command, digest=nil)
       @name = name
+      @http_method = http_method
       @path = path
       @description = description
       @params = params
@@ -91,6 +92,7 @@ module Jirest
       @hash.each do |key, value|
         api = {}
         api['name'] = value.name
+        api['http_method'] = value.http_method
         api['path'] = value.path
         api['description'] = value.description
         api['params'] = value.params
@@ -105,7 +107,7 @@ module Jirest
     private def deserialize(json)
       JSON.parse(json).each do |key, value|
         @hash[key] =
-            ApiInfo.new(value['name'], value['path'], value['description'],
+            ApiInfo.new(value['name'], value['http_method'], value['path'], value['description'],
                         value['params'], value['command'], value['digest'])
       end
     end
@@ -140,8 +142,9 @@ module Jirest
         name = h3.content
         root_api_elem = h3.parent
 
-        # extract API path
-        path = h3.next.content
+        # extract API method and path
+        http_method = h3.next.content.split(' ')[0]
+        path = h3.next.content.split(' ')[1]
 
         # extract API description
         description = h3.next.next.content
@@ -180,7 +183,7 @@ module Jirest
         end
         next if command.nil?
 
-        latest_api_table.set(name, ApiInfo.new(name, path, description, params, command))
+        latest_api_table.set(name, ApiInfo.new(name, http_method, path, description, params, command))
       end
 
       return latest_api_table
