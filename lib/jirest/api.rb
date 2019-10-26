@@ -11,92 +11,14 @@ module Jirest
 
     attr_reader :name, :http_method, :path, :description, :params, :command, :digest
 
-    def initialize(name, http_method, path, description, params, command, digest=nil)
+    def initialize(name, http_method, path, description, params, command, digest)
       @name = name
       @http_method = http_method
       @path = path
       @description = description
       @params = params
-      @command = normalize_command(command)
-      @digest = digest || calc_digest(name, description, params, command)
-    end
-
-    private def normalize_command(command)
-
-      if @http_method == 'GET' or @http_method == 'DELETE'
-        http_params_matcher = /--url '\/.+\?(.*)'/
-        md = command.match(http_params_matcher)
-        http_params_hash = {}
-
-        return command if md.nil? or md.size < 2
-        http_params = md[1].split('&') # HTTP params
-        http_params.each do |http_param|
-          http_param_pair = http_param.split('=')
-          http_params_hash[http_param_pair[0]] = http_param_pair[1]
-        end
-
-        @params.each do |param|
-          name = param['name']
-
-          # check if the parameter is used in the command template
-          next if command.include?("{#{name}}")
-
-          # replace param value with template variable
-          http_params_hash[name] = "{#{name}}" if !http_params_hash[name].nil?
-        end
-
-        # concat all the HTTP request params
-        http_params_str = ''
-        http_params_hash.each do |key, value|
-          http_params_str += "#{key}=#{value}&"
-        end
-        http_params_str.chop! if http_params_str[-1] == '&' # remove the last '&' character
-
-        # update HTTP request params in the command template
-        url_matcher = /--url '(\/.+)\?.*'/
-        replacement = '--url \'\1' + '?' + http_params_str + '\''
-        command.gsub!(url_matcher, replacement)
-      else
-        http_params_matcher = /--data '({[\s\S]+})'/
-        md = command.match(http_params_matcher)
-
-        return command if md.nil? or md.size < 2
-
-        http_body = md[1]  # HTTP request body
-        http_body_hash = JSON.parse(http_body)
-
-        @params.each do |param|
-          name = param['name']
-
-          # check if the parameter is used in the command template
-          next if command.include?("{#{name}}")
-
-          # next if the command template has HTTP request body
-          next if http_body_hash.nil?
-
-          # replace param value with template variable
-          http_body_hash[name] = "{#{name}}" if !http_body_hash[name].nil?
-        end
-
-        # update HTTP request body in the command template if any change
-        if !http_body_hash.nil?
-          http_body = JSON.pretty_generate(http_body_hash)
-          command.gsub!(http_params_matcher, "--data '#{http_body}'")
-        end
-      end
-
-      return command
-    end
-
-    # calculate digest of each API information
-    private def calc_digest(name, description, params, command)
-      str = name
-      str += description
-      params.each do |param|
-        str += param['name'] # param name
-      end
-      str += command
-      return Digest::SHA256.hexdigest(str)
+      @command = command
+      @digest = digest
     end
 
   end
@@ -189,6 +111,84 @@ module Jirest
       @latest_api_table = get_latest_api_table
     end
 
+    # replace API params with template variables
+    private def normalize_command(command, http_method, params)
+      if http_method == 'GET' or http_method == 'DELETE'
+        http_params_matcher = /--url '\/.+\?(.*)'/
+        md = command.match(http_params_matcher)
+        http_params_hash = {}
+
+        return command if md.nil? or md.size < 2
+        http_params = md[1].split('&') # HTTP params
+        http_params.each do |http_param|
+          http_param_pair = http_param.split('=')
+          http_params_hash[http_param_pair[0]] = http_param_pair[1]
+        end
+
+        params.each do |param|
+          name = param['name']
+
+          # check if the parameter is used in the command template
+          next if command.include?("{#{name}}")
+
+          # replace param value with template variable
+          http_params_hash[name] = "{#{name}}" if !http_params_hash[name].nil?
+        end
+
+        # concat all the HTTP request params
+        http_params_str = ''
+        http_params_hash.each do |key, value|
+          http_params_str += "#{key}=#{value}&"
+        end
+        http_params_str.chop! if http_params_str[-1] == '&' # remove the last '&' character
+
+        # update HTTP request params in the command template
+        url_matcher = /--url '(\/.+)\?.*'/
+        replacement = '--url \'\1' + '?' + http_params_str + '\''
+        command.gsub!(url_matcher, replacement)
+      else
+        http_params_matcher = /--data '({[\s\S]+})'/
+        md = command.match(http_params_matcher)
+
+        return command if md.nil? or md.size < 2
+
+        http_body = md[1]  # HTTP request body
+        http_body_hash = JSON.parse(http_body)
+
+        params.each do |param|
+          name = param['name']
+
+          # check if the parameter is used in the command template
+          next if command.include?("{#{name}}")
+
+          # next if the command template has HTTP request body
+          next if http_body_hash.nil?
+
+          # replace param value with template variable
+          http_body_hash[name] = "{#{name}}" if !http_body_hash[name].nil?
+        end
+
+        # update HTTP request body in the command template if any change
+        if !http_body_hash.nil?
+          http_body = JSON.pretty_generate(http_body_hash)
+          command.gsub!(http_params_matcher, "--data '#{http_body}'")
+        end
+      end
+
+      return command
+    end
+
+    # calculate digest of each API information
+    private def calc_digest(name, description, params, command)
+      str = name
+      str += description
+      params.each do |param|
+        str += param['name'] # param name
+      end
+      str += command
+      return Digest::SHA256.hexdigest(str)
+    end
+
     # retrieve the latest API information
     private def get_latest_api_table
       latest_api_table = ApiInfoTable.new
@@ -251,7 +251,9 @@ module Jirest
         end
         next if command.nil?
 
-        latest_api_table.set(name, ApiInfo.new(name, http_method, path, description, params, command))
+        normalized_command = normalize_command(command, http_method, params)
+        digest = calc_digest(name, description, params, command)
+        latest_api_table.set(name, ApiInfo.new(name, http_method, path, description, params, normalized_command, digest))
       end
 
       return latest_api_table
