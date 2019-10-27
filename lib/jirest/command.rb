@@ -5,6 +5,7 @@ module Jirest
   class CommandExecutor
 
     def initialize
+      @config = ConfigManager.new.load_config
       @api_table = ApiInfoTable.new            # API definitions
       @api_table.load_apis
 
@@ -14,8 +15,8 @@ module Jirest
         @api_table.load_apis
       end
 
-      @params = {}                        # parameters
-      @templates = {}                     # curl command templates
+      @params = {}                            # parameters
+      @templates = {}                         # curl command templates
       user_def = Util::load_user_def
       @templates = JSON.parse(user_def) unless user_def.nil?
     end
@@ -69,10 +70,16 @@ module Jirest
       return nil
     end
 
-    # execute vim command
-    private def vim(path)
+    # editor command
+    private def editor(path)
+      editor = @config['editor']
+
+      if editor.nil? or not (editor == 'vim' or editor == 'emacs')
+        editor = 'vim'
+      end
+
       unless path.nil?
-        IO.popen("</dev/tty vim #{path} 1>&2", 'r+') do |io|
+        IO.popen("</dev/tty #{editor} #{path} 1>&2", 'r+') do |io|
         end
       end
     end
@@ -181,17 +188,14 @@ module Jirest
         command.gsub!("{#{key}}", value)
       end
 
-      # load config
-      conf = ConfigManager.new.load_config
-
       # add option
       command.gsub!('curl', 'curl -s')
 
       # embed credentials
-      command.gsub!("--user 'email@example.com:<api_token>'", "--user #{conf['user']}:#{conf['token']}")
+      command.gsub!("--user 'email@example.com:<api_token>'", "--user #{@config['user']}:#{@config['token']}")
 
       # embed Jira Base URL
-      command.gsub!('--url \'', "--url '#{conf['base-url']}")
+      command.gsub!('--url \'', "--url '#{@config['base-url']}")
 
       return command
     end
@@ -247,7 +251,7 @@ module Jirest
         tmp.puts
         tmp.puts template
         tmp.flush
-        vim(tmp.path)
+        editor(tmp.path)
 
         new_template = ''
         File.open(tmp.path, 'r') do |file|

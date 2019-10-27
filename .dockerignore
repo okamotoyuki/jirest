@@ -1,9 +1,7 @@
 .*
 *.md
-LICENSE.txt
 Dockerfile
 Gemfile.lock
-Rakefile
 jirest_test.rb
 data/conf.yml
 test

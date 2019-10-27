@@ -48,9 +48,20 @@ module Jirest
       token = Jirest::stdin.gets.chomp
       Jirest::stderr.puts
 
+      # Editor
+      Jirest::stderr.puts "What's your preferred editor app? ('vim' or 'emacs')"
+      Jirest::stderr.print '> '
+      editor = Jirest::stdin.gets.chomp
+      Jirest::stderr.puts
+      if not (editor == 'vim' or editor == 'emacs')
+        Util::error "the editor must be chosen from 'vim' or 'emacs'."
+        exit
+      end
+
       config['base-url'] = base_url
       config['user'] = user
       config['token'] = token
+      config['editor'] = editor
 
       YAML.dump(config, File.open(Jirest::data_dir + '/conf.yml', 'w'))
 
