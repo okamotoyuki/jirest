@@ -52,7 +52,14 @@ module Jirest
         IO.popen('peco --select-1', 'r+') do |io|
           io.puts(input)
           io.close_write
-          return io.gets&.chomp
+          result = io.gets&.chomp
+
+          if result.nil? or result.empty?
+            Util::error 'there is no result which matches the provided keyword.'
+            exit
+          end
+
+          return result
         end
       end
       return nil
