@@ -24,7 +24,9 @@ WORKDIR /root/jirest
 COPY . .
 
 # install dependency
-RUN apk add --no-cache build-base
+RUN apk add --no-cache gcc
+RUN apk add --no-cache libc-dev
+RUN apk add --no-cache make
 RUN gem install bundler -v 1.16.3
 RUN bundle install --path vendor/bundle
 RUN bundle exec rake test
