@@ -23,7 +23,7 @@
     alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest'
     alias jirest-upgrade='docker rmi okamotoyuki/jirest:latest; docker pull okamotoyuki/jirest'
     ```
-3. Run `jirest init` command to setup your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+3. Run `jirest init` command to setup your Jira Cloud Base URL, username (email address), [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) and your preferred editor for editing API request templates.
 
     ```
     $ jirest init
@@ -57,7 +57,7 @@
     $ jirest edit [KEYWORD]
     ```
     
-- Revert a request template for a Jira REST API back to the default.
+- Revert a request template back to the default.
 
     ```
     $ jirest revert [KEYWORD]
