@@ -17,10 +17,11 @@
     $ docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest
     ```
     
-    We recommend you to add the following line to your `.bashrc`.
+    We recommend you to add the following lines to your `.bashrc`.
     
     ```
     alias jirest='docker run -it --rm -v $HOME/.jirest:/root/jirest/data okamotoyuki/jirest'
+    alias jirest-upgrade='docker rmi okamotoyuki/jirest:latest; docker pull okamotoyuki/jirest'
     ```
 3. Run `jirest init` command to setup your Jira Cloud Base URL, username (email address) and [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
 
@@ -32,7 +33,7 @@
 
 ![jirest](https://github.com/okamotoyuki/jirest/blob/master/jirest.gif?raw=true)
 
-- Initialize jirest config.
+- Initialize *jirest* config.
 
     ```
     $ jirest init
@@ -84,6 +85,12 @@
 
     ```
     $ jirest reset
+    ```
+
+- Upgrade *jirest* to the latest version.
+
+    ```
+    $ jirest-upgrade
     ```
 
 ## Development
